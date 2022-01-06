@@ -1,6 +1,7 @@
 
 import * as React from "react";
 import { useLocation, Navigate } from "react-router-dom";
+import { GET_USER } from "./store/types";
 
 export const AuthContext = React.createContext(null);
 export function useAuth() {
@@ -10,13 +11,21 @@ export function UserConsumer() {
     return AuthContext.Consumer;
 }
 export function AuthProvider({ children, ...props }) {
-    const [user, setUser] = React.useState(props.user || null);
+    const [user, setUser] = React.useState(null || props.loggedUser);
     const [errors, setErrors] = React.useState(null);
     const signIn = (username, password, callback) => {
-        if(username == "rali" && password == "123") {
-            setErrors(null)
-            setUser(username);
-            callback();
+        if(username && password) {
+            fetch(`http://localhost:8080/get-user?username=${username}&password=${password}`)
+                .then(response => response.json())
+                .then(payload => {
+                    if(payload) {
+                        // console.log(payload)
+                        setErrors(null)
+                        setUser(username);
+                        props.dispatch({ type: GET_USER, payload });
+                        callback();
+                    }
+                });
         } else {
             setErrors("Wrong user or password")
         }
@@ -31,8 +40,17 @@ export function AuthProvider({ children, ...props }) {
 export function RequireAuth({ children }) {
     const auth = useAuth();
     const location = useLocation();
-    if ( ! auth.user) {
+    if ( ! auth.user || !auth.user.loggedIn) {
         return <Navigate to="/login" state={{ from: location }} />;
+    }
+    return children;
+}
+
+export function RequireNotAuth({ children }) {
+    const auth = useAuth();
+    const location = useLocation();
+    if (auth.user && auth.user.loggedIn) {
+        return <Navigate to="/" state={{ from: location }} />;
     }
     return children;
 }
