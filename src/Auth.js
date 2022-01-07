@@ -1,7 +1,7 @@
 
 import * as React from "react";
 import { useLocation, Navigate } from "react-router-dom";
-import { GET_USER } from "./store/types";
+import { LOGIN_USER } from "./store/types";
 
 export const AuthContext = React.createContext(null);
 export function useAuth() {
@@ -14,15 +14,16 @@ export function AuthProvider({ children, ...props }) {
     const [user, setUser] = React.useState(null || props.loggedUser);
     const [errors, setErrors] = React.useState(null);
     const signIn = (username, password, callback) => {
+        // console.log(username, password)
         if(username && password) {
             fetch(`http://localhost:8080/get-user?username=${username}&password=${password}`)
                 .then(response => response.json())
                 .then(payload => {
                     if(payload) {
-                        // console.log(payload)
+                        console.log(payload)
                         setErrors(null)
-                        setUser(username);
-                        props.dispatch({ type: GET_USER, payload });
+                        setUser(payload);
+                        props.dispatch({ type: LOGIN_USER, payload });
                         callback();
                     }
                 });

@@ -15,7 +15,7 @@ import {
 	VideoCameraOutlined,
 	UploadOutlined,
 } from '@ant-design/icons';
-import { LOGOUT_USER } from "./store/types";
+import { LOGOUT_USER, DELETE_SOCKET } from "./store/types";
 
 const { Header, Sider, Content } = Layout;
 function MainLayout({ dispatch }) {
@@ -37,8 +37,10 @@ function MainLayout({ dispatch }) {
 				</Menu.Item>
 				<Menu.Item key="3" icon={<VideoCameraOutlined />} onClick={() => {
 					// Logout
+					console.log("TEST")
 					context.setErrors(null);
 					dispatch({ type: LOGOUT_USER, payload: null });
+					dispatch({ type: DELETE_SOCKET, payload: null });
 					navigate("login", { replace: true });
 				}} >
 					Logout

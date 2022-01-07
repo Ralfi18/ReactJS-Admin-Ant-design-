@@ -5,7 +5,7 @@ export const persistConfig = {
     storage
 }
 
-export const initialState = {
+export const initialUserState = {
     user: {
         loggedIn: false,
         data: {
@@ -14,4 +14,7 @@ export const initialState = {
             email: ""
         }
     }
+}
+export const initialSocketState = {
+    socket: null
 }
