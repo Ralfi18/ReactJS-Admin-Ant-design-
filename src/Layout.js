@@ -19,13 +19,11 @@ import { LOGOUT_USER, DELETE_SOCKET } from "./store/types";
 
 const { Header, Sider, Content } = Layout;
 function MainLayout({ dispatch }) {
-	console.log(dispatch)
 	const [collapsed, setCollapsed] = useState(false);
 	const context = useContext(AuthContext)
 	const navigate = useNavigate();
 	const location = useLocation();
 	return <Layout style={{ minHeight: '100vh' }}>
-
 		<Sider collapsible collapsed={collapsed} onCollapse={() => setCollapsed(!collapsed)} >
 			<div className="logo" />
 			<Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
@@ -37,20 +35,19 @@ function MainLayout({ dispatch }) {
 				</Menu.Item>
 				<Menu.Item key="3" icon={<VideoCameraOutlined />} onClick={() => {
 					// Logout
-					console.log("TEST")
 					context.setErrors(null);
-					dispatch({ type: LOGOUT_USER, payload: null });
-					dispatch({ type: DELETE_SOCKET, payload: null });
-					navigate("login", { replace: true });
+					context.signOut(() => {
+						dispatch({ type: LOGOUT_USER, payload: null });
+						dispatch({ type: DELETE_SOCKET, payload: null });
+						navigate("login", { replace: true });
+					});
 				}} >
 					Logout
 				</Menu.Item>
 			</Menu>
 		</Sider>
 		<Layout className="site-layout">
-			<Header className="site-layout-background" style={{ padding: 0 }}>
-
-			</Header>
+			<Header className="site-layout-background" style={{ padding: 0 }}></Header>
 			<Content
 				className="site-layout-background"
 				style={{

@@ -1,8 +1,8 @@
 
-import * as React from "react";
+import React, { useContext, useState, useEffect } from "react"
 import { useLocation, Navigate } from "react-router-dom";
 import { LOGIN_USER } from "./store/types";
-
+import io from "socket.io-client";
 export const AuthContext = React.createContext(null);
 export function useAuth() {
     return React.useContext(AuthContext);
@@ -13,29 +13,49 @@ export function UserConsumer() {
 export function AuthProvider({ children, ...props }) {
     const [user, setUser] = React.useState(null || props.loggedUser);
     const [errors, setErrors] = React.useState(null);
+    const [socket, setSocket] = React.useState(null);
     const signIn = (username, password, callback) => {
-        // console.log(username, password)
         if(username && password) {
             fetch(`http://localhost:8080/get-user?username=${username}&password=${password}`)
                 .then(response => response.json())
                 .then(payload => {
                     if(payload) {
-                        console.log(payload)
-                        setErrors(null)
-                        setUser(payload);
-                        props.dispatch({ type: LOGIN_USER, payload });
-                        callback();
+                        if(payload && payload.loggedIn) {
+                            console.log( payload )
+                            setErrors(null)
+                            setUser(payload);
+                            props.dispatch({ type: LOGIN_USER, payload });
+
+                            callback();
+                        }
                     }
                 });
         } else {
             setErrors("Wrong user or password")
         }
     };
-    const signout = (callback) => {
+    const signOut = (callback) => {
         setUser(null);
         callback();
     };
-    const value = { user, errors, signIn, signout, setErrors };
+    useEffect(() => {
+        // if(user && user.loggedIn) {
+            const URL = "http://localhost:8080";
+            const tmpSocket = socket ? socket : io(URL, { autoConnect: true });
+            setSocket(tmpSocket);
+            // if(tmpSocket) {
+                tmpSocket.on("connect", () => {
+
+                    console.log("SOCKET CONNECTED: ", tmpSocket.id);
+                });
+                tmpSocket.on("disconnect", () => { 
+                    console.log(tmpSocket.id + " disconnected"); 
+                });
+            // }
+
+        // }
+    }, []); 
+    const value = { user, errors, signIn, signOut, setErrors, socket };
     return <AuthContext.Provider value={value} >{children}</AuthContext.Provider>;
 }
 export function RequireAuth({ children }) {
