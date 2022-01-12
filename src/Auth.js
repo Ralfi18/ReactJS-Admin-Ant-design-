@@ -39,21 +39,21 @@ export function AuthProvider({ children, ...props }) {
         callback();
     };
     useEffect(() => {
-        // if(user && user.loggedIn) {
-            const URL = "http://localhost:8080";
-            const tmpSocket = socket ? socket : io(URL, { autoConnect: true });
-            setSocket(tmpSocket);
-            // if(tmpSocket) {
-                tmpSocket.on("connect", () => {
-
-                    console.log("SOCKET CONNECTED: ", tmpSocket.id);
-                });
-                tmpSocket.on("disconnect", () => { 
-                    console.log(tmpSocket.id + " disconnected"); 
-                });
-            // }
-
-        // }
+        console.log( "useEffect" )
+        setTimeout(function(){
+            console.log( "timeout", user )
+            if(user && user.loggedIn) {
+                const URL = "http://localhost:8080";
+                const tmpSocket = socket ? socket : io(URL, { autoConnect: true });
+                setSocket(tmpSocket);
+                console.log(tmpSocket)
+                if(tmpSocket) {
+                    tmpSocket.on("connect", () => {console.log("SOCKET CONNECTED: ", tmpSocket.id); });
+                    tmpSocket.on("disconnect", () => {  console.log(tmpSocket.id + " disconnected"); });
+                    tmpSocket.on("connect_error", () => { console.log('ERROR') });
+                }
+            }
+        }, 3000);
     }, []); 
     const value = { user, errors, signIn, signOut, setErrors, socket };
     return <AuthContext.Provider value={value} >{children}</AuthContext.Provider>;
