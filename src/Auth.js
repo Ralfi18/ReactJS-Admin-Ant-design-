@@ -21,11 +21,9 @@ export function AuthProvider({ children, ...props }) {
                 .then(payload => {
                     if(payload) {
                         if(payload && payload.loggedIn) {
-                            console.log( payload )
                             setErrors(null)
                             setUser(payload);
                             props.dispatch({ type: LOGIN_USER, payload });
-
                             callback();
                         }
                     }
@@ -38,23 +36,19 @@ export function AuthProvider({ children, ...props }) {
         setUser(null);
         callback();
     };
+    // Imitates componentDidUpdate but only if user is updated
     useEffect(() => {
-        console.log( "useEffect" )
-        setTimeout(function(){
-            console.log( "timeout", user )
-            if(user && user.loggedIn) {
-                const URL = "http://localhost:8080";
-                const tmpSocket = socket ? socket : io(URL, { autoConnect: true });
-                setSocket(tmpSocket);
-                console.log(tmpSocket)
-                if(tmpSocket) {
-                    tmpSocket.on("connect", () => {console.log("SOCKET CONNECTED: ", tmpSocket.id); });
-                    tmpSocket.on("disconnect", () => {  console.log(tmpSocket.id + " disconnected"); });
-                    tmpSocket.on("connect_error", () => { console.log('ERROR') });
-                }
+        if(user && user.loggedIn) {
+            const URL = "http://localhost:8080";
+            const tmpSocket = socket ? socket : io(URL, { autoConnect: true });
+            setSocket(tmpSocket);
+            if(tmpSocket) {
+                tmpSocket.on("connect", () => {console.log("SOCKET CONNECTED: ", tmpSocket.id); });
+                tmpSocket.on("disconnect", () => {  console.log(tmpSocket.id + " disconnected"); });
+                tmpSocket.on("connect_error", () => { console.log('ERROR') });
             }
-        }, 3000);
-    }, []); 
+        }
+    }, [user]); 
     const value = { user, errors, signIn, signOut, setErrors, socket };
     return <AuthContext.Provider value={value} >{children}</AuthContext.Provider>;
 }
