@@ -3,6 +3,8 @@ import React, { useContext, useState, useEffect } from "react"
 import { useLocation, Navigate } from "react-router-dom";
 import { LOGIN_USER } from "./store/types";
 import io from "socket.io-client";
+
+
 export const AuthContext = React.createContext(null);
 export function useAuth() {
     return React.useContext(AuthContext);
@@ -24,9 +26,10 @@ export function AuthProvider({ children, ...props }) {
                             setErrors(null)
                             setUser(payload);
                             props.dispatch({ type: LOGIN_USER, payload });
-                            callback();
+                            return callback();
                         }
                     }
+                    setErrors("Wrong user or password")
                 });
         } else {
             setErrors("Wrong user or password")

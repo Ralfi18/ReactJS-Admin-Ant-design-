@@ -11,7 +11,8 @@ export const initialUserState = {
         data: {
             id: "",
             name: "",
-            email: ""
+            email: "",
+            token: null
         }
     }
 }

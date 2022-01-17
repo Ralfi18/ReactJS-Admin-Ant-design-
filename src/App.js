@@ -7,7 +7,7 @@ import MainLayout from "./Layout";
 import { connect } from 'react-redux';
 import { SET_SOCKET } from "./store/types";
 import { AuthContext, useAuth } from "./Auth";
-function Home() {
+function Home({ user }) {
 	// const [socket, setSocket] = useState(null);
 	const [message, setMessage] = useState("");
 	const context = useContext(AuthContext)
@@ -26,7 +26,8 @@ function Home() {
 		e.preventDefault();
 		// console.log(context.socket)
 		// console.log(context.socket.id)
-		context.socket.emit("message", message);
+		console.log(user.data.token)
+		context.socket.emit("message", { token: user.data.token, msg: message });
 	}
 	return (
 		<>
@@ -46,7 +47,7 @@ function App({ user, dispatch }) {
 				<Router>
 					<Routes>
 						<Route element={<RequireAuth><MainLayout /></RequireAuth>}>
-							<Route path="/" element={<Home />} />
+							<Route path="/" element={<Home user={user} />} />
 							<Route path="/about" element={<About />} />
 						</Route>
 						<Route path="/login" element={<RequireNotAuth><LoginPage /></RequireNotAuth>} />
