@@ -7,26 +7,13 @@ import MainLayout from "./Layout";
 import { connect } from 'react-redux';
 import { SET_SOCKET } from "./store/types";
 import { AuthContext, useAuth } from "./Auth";
+
 function Home({ user }) {
 	// const [socket, setSocket] = useState(null);
 	const [message, setMessage] = useState("");
 	const context = useContext(AuthContext)
-	useEffect(() => {
-		// console.log( context.socket )
-		if(context.socket) {
-			// console.log("HOME: ", context.socket)
-			context.socket.on('message', function(msg) {    
-				// console.log(context.socket.id)
-				console.log( "Message: " + msg )
-			});
-		}
-
-	}, []);
 	function handleSubmit(e) {
 		e.preventDefault();
-		// console.log(context.socket)
-		// console.log(context.socket.id)
-		console.log(user.data.token)
 		context.socket.emit("message", { token: user.data.token, msg: message });
 	}
 	return (
