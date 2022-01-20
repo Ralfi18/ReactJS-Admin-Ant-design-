@@ -67,10 +67,12 @@ export function AuthProvider({ children, ...props }) {
         if(user && user.loggedIn) {
             console.log("loggedIn", socket)
             const URL = "http://localhost:8080";
-            const tmpSocket = socket ? socket : io(URL, { autoConnect: true });
+            const tmpSocket = io(URL, { autoConnect: true });
 
-            setSocket(tmpSocket);
-            if(tmpSocket) {
+
+    
+            if(tmpSocket && !socket) {
+                setSocket(tmpSocket);
                 tmpSocket.on("connect", (socket) => {
                     if( ! props.loggedUser.loggedIn) {
                         tmpSocket.emit("appInit", { token: user.data.token, msg: "message" });
@@ -100,7 +102,10 @@ export function AuthProvider({ children, ...props }) {
                     // console.log(tmpSocket.id)
                     console.log( "Hey: " + msg )
                 });
-
+                tmpSocket.on('message', function(msg) {    
+                    // console.log(tmpSocket.id)
+                    console.log( "Message: " + msg )
+                });
             }
         }
 
