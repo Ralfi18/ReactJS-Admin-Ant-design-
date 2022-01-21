@@ -28,6 +28,7 @@ function Home({ user }) {
 const About = () => (<h1>Test</h1>);
 
 function App({ user, dispatch }) {
+	console.log( "App" )
 	return (
 		<div className="App">
 			<AuthProvider loggedUser={user} dispatch={dispatch} >

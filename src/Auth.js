@@ -30,7 +30,7 @@ export function UserConsumer() {
 
 
 export function AuthProvider({ children, ...props }) {
-    console.log(props)
+    console.log("AuthProvider")
     const [user, setUser] = React.useState(null || props.loggedUser);
     const [errors, setErrors] = React.useState(null);
     const [socket, setSocket] = React.useState(null);
@@ -61,26 +61,27 @@ export function AuthProvider({ children, ...props }) {
         setSocket(null);
         callback();
     };
+    console.log( "TEST" )
     // Imitates componentDidUpdate but only if user is updated
     useEffect(() => {
         // console.log("props.loggedUser", )
         if(user && user.loggedIn) {
-            console.log("loggedIn", socket)
+            // console.log("loggedIn", socket)
             const URL = "http://localhost:8080";
             const tmpSocket = io(URL, { autoConnect: true });
-
-
     
             if(tmpSocket && !socket) {
                 setSocket(tmpSocket);
                 tmpSocket.on("connect", (socket) => {
                     if( ! props.loggedUser.loggedIn) {
-                        tmpSocket.emit("appInit", { token: user.data.token, msg: "message" });
+                        /** Fetch initial data */
+
                     }
-                    console.log("Cnnect", props.loggedUser.loggedIn, user)
+                    tmpSocket.emit("appInit", { token: user.data.token, msg: "message" });
+                    console.log("Connect", props.loggedUser.loggedIn, user)
                 });
                 tmpSocket.on("disconnect", () => {
-                    console.log(socket)
+                    // console.log(socket)
                     // setUser(null);
                     // props.dispatch({ type: LOGOUT_USER, payload: null });
                     // tmpSocket.emit("logout", tmpSocket.id);
@@ -90,21 +91,29 @@ export function AuthProvider({ children, ...props }) {
                 });
                 tmpSocket.on("connect_error", (err) => {
                     // window.location.href = window.location.href;
-                    console.log("Try to reconect!")
+                    // console.log("Try to reconect!")
                 });
                 /** */
                 tmpSocket.on('login', function(msg) {    
-                    console.log(tmpSocket.id)
-                    console.log( "Login message: " + msg )
+                    // console.log(tmpSocket.id)
+                    // console.log( "Login message: " + msg )
                     antd_message.success(msg, 3);
                 });
+                tmpSocket.on('logout', function(msg) {    
+                    console.log('logout')
+                    setUser(null);
+                    props.dispatch({ type: LOGOUT_USER, payload: null });
+                    tmpSocket.emit("logout", tmpSocket.id);
+                    setSocket(null);
+                });
+                
                 tmpSocket.on('hey', function(msg) {    
                     // console.log(tmpSocket.id)
-                    console.log( "Hey: " + msg )
+                    // console.log( "Hey: " + msg )
                 });
                 tmpSocket.on('message', function(msg) {    
                     // console.log(tmpSocket.id)
-                    console.log( "Message: " + msg )
+                    // console.log( "Message: " + msg )
                 });
             }
         }
