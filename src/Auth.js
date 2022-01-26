@@ -1,7 +1,7 @@
 
 import React, { useContext, useState, useEffect } from "react"
 import { useLocation, Navigate } from "react-router-dom";
-import { LOGIN_USER, LOGOUT_USER } from "./store/types";
+import { LOGIN_USER, LOGOUT_USER, SET_INVENTORIES, CLEAR_INVENTORY, UPDATE_INVENTORY} from "./store/types";
 import io from "socket.io-client";
 import { message as antd_message  } from 'antd';
 import { connect } from 'react-redux';
@@ -61,7 +61,7 @@ export function AuthProvider({ children, ...props }) {
         setSocket(null);
         callback();
     };
-    console.log( "TEST" )
+
     // Imitates componentDidUpdate but only if user is updated
     useEffect(() => {
         // console.log("props.loggedUser", )
@@ -75,7 +75,7 @@ export function AuthProvider({ children, ...props }) {
                 tmpSocket.on("connect", (socket) => {
                     if( ! props.loggedUser.loggedIn) {
                         /** Fetch initial data */
-
+                        tmpSocket.emit("loadProducts", { token: user.data.token });
                     }
                     tmpSocket.emit("appInit", { token: user.data.token, msg: "message" });
                     console.log("Connect", props.loggedUser.loggedIn, user)
@@ -89,6 +89,14 @@ export function AuthProvider({ children, ...props }) {
 
                     // window.location.href = window.location.href;
                 });
+                tmpSocket.on("loadProducts", (data) => {
+                    // window.location.href = window.location.href;
+                    // console.log("Try to reconect!")
+                    if(data && data.length) {
+                        const inventory = JSON.parse(data); 
+                        props.dispatch({ type: SET_INVENTORIES, payload: inventory });
+                    }
+                });
                 tmpSocket.on("connect_error", (err) => {
                     // window.location.href = window.location.href;
                     // console.log("Try to reconect!")
@@ -100,13 +108,22 @@ export function AuthProvider({ children, ...props }) {
                     antd_message.success(msg, 3);
                 });
                 tmpSocket.on('logout', function(msg) {    
-                    console.log('logout')
                     setUser(null);
                     props.dispatch({ type: LOGOUT_USER, payload: null });
+                    props.dispatch({ type: CLEAR_INVENTORY, payload: null });
                     tmpSocket.emit("logout", tmpSocket.id);
                     setSocket(null);
                 });
-                
+                tmpSocket.on('updateProduct', function(json) {   
+                    console.log("updateProduct") 
+                    if(json && json.length) {
+                        const product = JSON.parse(json);
+                        if(product && product.length == 1) {
+                            console.log(product[0])
+                            props.dispatch({ type: UPDATE_INVENTORY, payload: product[0] });
+                        }
+                    }
+                });
                 tmpSocket.on('hey', function(msg) {    
                     // console.log(tmpSocket.id)
                     // console.log( "Hey: " + msg )
@@ -114,6 +131,7 @@ export function AuthProvider({ children, ...props }) {
                 tmpSocket.on('message', function(msg) {    
                     // console.log(tmpSocket.id)
                     // console.log( "Message: " + msg )
+                    antd_message.success(msg, 3);
                 });
             }
         }

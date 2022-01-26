@@ -19,3 +19,10 @@ export const initialUserState = {
 export const initialSocketState = {
     socket: null
 }
+
+
+export const initialInventoryState = {
+    pages: 0,
+    perPage: 10,
+    data: []
+};
