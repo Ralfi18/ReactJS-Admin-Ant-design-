@@ -7,7 +7,7 @@ import {
 	useNavigate,
 	useLocation
 } from "react-router-dom";
-import { Layout, Menu, Button } from 'antd';
+import { Layout, Menu, Alert } from 'antd';
 import {
 	MenuUnfoldOutlined,
 	MenuFoldOutlined,
@@ -48,7 +48,17 @@ function MainLayout({ dispatch }) {
 			</Menu>
 		</Sider>
 		<Layout className="site-layout">
-			<Header className="site-layout-background" style={{ padding: 0 }}></Header>
+			<Header className="site-layout-background" style={{ padding: 0 }}>
+				{
+					context.offline === true ?
+					<Alert
+						message="Warning!!! You are working offline!!!"
+						type="error"
+					/>
+					:
+					null
+				}
+			</Header>
 			<Content
 				className="site-layout-background"
 				style={{

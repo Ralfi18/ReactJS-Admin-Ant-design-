@@ -12,6 +12,7 @@ import { Table, Space, Modal, Form, Input, InputNumber } from 'antd';
 function Home({ user }) {
 	const [message, setMessage] = useState("");
 	const context = useContext(AuthContext)
+
 	function handleSubmit(e) {
 		e.preventDefault();
 		context.socket.emit("message", { token: user.data.token, msg: message });
@@ -71,7 +72,7 @@ const Inventory = ({ inventory, dispatch }) => {
 	};
 
 	const handleOk = () => {
-		context.socket.emit("udapteProduct", { token: context.user.data.token, product: selectedInventory });
+		context.socket.emit("updateProduct", { token: context.user.data.token, product: selectedInventory });
 		// dispatch({ type: UPDATE_INVENTORY, payload: selectedInventory });
 		setSelectedInventory(null);
 		setIsModalVisible(false);
@@ -132,6 +133,7 @@ const Inventory = ({ inventory, dispatch }) => {
 };
 
 function App({ user, inventory, dispatch }) {
+
 	return (
 		<div className="App">
 			<AuthProvider loggedUser={user} dispatch={dispatch} >

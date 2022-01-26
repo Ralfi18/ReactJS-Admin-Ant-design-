@@ -34,6 +34,7 @@ export function AuthProvider({ children, ...props }) {
     const [user, setUser] = React.useState(null || props.loggedUser);
     const [errors, setErrors] = React.useState(null);
     const [socket, setSocket] = React.useState(null);
+    const [offline, setOffline] = React.useState(false);
     const signIn = (username, password, callback) => {
         if(username && password) {
             fetch(`http://localhost:8080/get-user?username=${username}&password=${password}`)
@@ -69,16 +70,18 @@ export function AuthProvider({ children, ...props }) {
             // console.log("loggedIn", socket)
             const URL = "http://localhost:8080";
             const tmpSocket = io(URL, { autoConnect: true });
-    
+            console.log("tmpSocket");
             if(tmpSocket && !socket) {
                 setSocket(tmpSocket);
                 tmpSocket.on("connect", (socket) => {
+                    console.log("connect")
                     if( ! props.loggedUser.loggedIn) {
                         /** Fetch initial data */
                         tmpSocket.emit("loadProducts", { token: user.data.token });
                     }
+               
                     tmpSocket.emit("appInit", { token: user.data.token, msg: "message" });
-                    console.log("Connect", props.loggedUser.loggedIn, user)
+                    // console.log("Connect", props.loggedUser.loggedIn, user)
                 });
                 tmpSocket.on("disconnect", () => {
                     // console.log(socket)
@@ -91,21 +94,30 @@ export function AuthProvider({ children, ...props }) {
                 });
                 tmpSocket.on("loadProducts", (data) => {
                     // window.location.href = window.location.href;
-                    // console.log("Try to reconect!")
+                    // console.log("Try to reconnect!")
                     if(data && data.length) {
                         const inventory = JSON.parse(data); 
                         props.dispatch({ type: SET_INVENTORIES, payload: inventory });
                     }
                 });
                 tmpSocket.on("connect_error", (err) => {
+                    console.log("connect_error")
+                    if(offline === false) {
+                        setOffline(true);
+                    }
                     // window.location.href = window.location.href;
-                    // console.log("Try to reconect!")
+                    // console.log("Try to reconnect!")
                 });
                 /** */
                 tmpSocket.on('login', function(msg) {    
                     // console.log(tmpSocket.id)
                     // console.log( "Login message: " + msg )
-                    antd_message.success(msg, 3);
+                    console.log("offline", offline);
+                    if(offline === false) {
+                        antd_message.success(msg, 3);
+                    } else {
+                        setOffline(false);
+                    }
                 });
                 tmpSocket.on('logout', function(msg) {    
                     setUser(null);
@@ -137,7 +149,7 @@ export function AuthProvider({ children, ...props }) {
         }
 
     }, [user]); 
-    const value = { user, errors, signIn, signOut, setErrors, socket };
+    const value = { user, errors, signIn, signOut, setErrors, socket, offline };
     return <AuthContext.Provider value={value} >{children}</AuthContext.Provider>;
 }
 export function RequireAuth({ children }) {
