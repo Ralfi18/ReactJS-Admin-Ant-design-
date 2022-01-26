@@ -79,22 +79,21 @@ export function AuthProvider({ children, ...props }) {
                         /** Fetch initial data */
                         tmpSocket.emit("loadProducts", { token: user.data.token });
                     }
-               
                     tmpSocket.emit("appInit", { token: user.data.token, msg: "message" });
-                    // console.log("Connect", props.loggedUser.loggedIn, user)
                 });
                 tmpSocket.on("disconnect", () => {
-                    // console.log(socket)
+                    /** 
+                     * !!!!!
+                     * DEPRECATED: reload in disconnect 
+                     * 
+                     * */
                     // setUser(null);
                     // props.dispatch({ type: LOGOUT_USER, payload: null });
                     // tmpSocket.emit("logout", tmpSocket.id);
                     // setSocket(null);
-
                     // window.location.href = window.location.href;
                 });
                 tmpSocket.on("loadProducts", (data) => {
-                    // window.location.href = window.location.href;
-                    // console.log("Try to reconnect!")
                     if(data && data.length) {
                         const inventory = JSON.parse(data); 
                         props.dispatch({ type: SET_INVENTORIES, payload: inventory });
@@ -105,13 +104,9 @@ export function AuthProvider({ children, ...props }) {
                     if(offline === false) {
                         setOffline(true);
                     }
-                    // window.location.href = window.location.href;
-                    // console.log("Try to reconnect!")
                 });
                 /** */
                 tmpSocket.on('login', function(msg) {    
-                    // console.log(tmpSocket.id)
-                    // console.log( "Login message: " + msg )
                     console.log("offline", offline);
                     if(offline === false) {
                         antd_message.success(msg, 3);
@@ -136,13 +131,8 @@ export function AuthProvider({ children, ...props }) {
                         }
                     }
                 });
-                tmpSocket.on('hey', function(msg) {    
-                    // console.log(tmpSocket.id)
-                    // console.log( "Hey: " + msg )
-                });
+                tmpSocket.on('hey', function(msg) {});
                 tmpSocket.on('message', function(msg) {    
-                    // console.log(tmpSocket.id)
-                    // console.log( "Message: " + msg )
                     antd_message.success(msg, 3);
                 });
             }
