@@ -2,8 +2,8 @@ import React from "react"
 import { Routes, BrowserRouter as Router, Route } from "react-router-dom";
 // import io from "socket.io-client";
 import { AuthProvider, RequireAuth, RequireNotAuth } from "./Auth";
-import LoginPage from "./components/LoginPage";
-import MainLayout from "./components/Layout";
+import LoginPage from "./LoginPage";
+import MainLayout from "./Layout";
 import Home from "./components/Home";
 import Inventory from "./components/Inventory";
 import { connect } from 'react-redux';
