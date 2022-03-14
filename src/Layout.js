@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react"
+import React, { useState, useContext } from "react"
 import { Link, Outlet } from "react-router-dom"
 import { connect } from 'react-redux';
 import './App.css';
@@ -9,11 +9,9 @@ import {
 } from "react-router-dom";
 import { Layout, Menu, Alert } from 'antd';
 import {
-	MenuUnfoldOutlined,
-	MenuFoldOutlined,
+
 	UserOutlined,
-	VideoCameraOutlined,
-	UploadOutlined,
+	VideoCameraOutlined
 } from '@ant-design/icons';
 import { LOGOUT_USER, DELETE_SOCKET, CLEAR_INVENTORY } from "./store/types";
 
@@ -22,7 +20,7 @@ function MainLayout({ dispatch }) {
 	const [collapsed, setCollapsed] = useState(false);
 	const context = useContext(AuthContext)
 	const navigate = useNavigate();
-	const location = useLocation();
+	// const location = useLocation();
 	return <Layout style={{ minHeight: '100vh' }}>
 		<Sider collapsible collapsed={collapsed} onCollapse={() => setCollapsed(!collapsed)} >
 			<div className="logo" />

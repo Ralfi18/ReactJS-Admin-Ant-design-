@@ -1,12 +1,12 @@
-import React, { useContext, useState, useEffect } from "react"
+import React, { useContext } from "react"
 import {
 	useNavigate,
 	useLocation
 } from "react-router-dom";
 import { AuthContext, useAuth } from "./Auth";
-import { Form, Input, Button, Checkbox, Alert } from 'antd';
+import { Form, Input, Button, Alert } from 'antd';
 function LoginPage() {
-	const [errors, setErrors] = useState(false);
+	// const [errors, setErrors] = useState(false);
 	const context = useContext(AuthContext)
 	const navigate = useNavigate();
 	const location = useLocation();

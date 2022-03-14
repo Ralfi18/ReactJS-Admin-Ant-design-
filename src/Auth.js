@@ -1,10 +1,10 @@
 
-import React, { useContext, useState, useEffect } from "react"
+import React, { useEffect } from "react"
 import { useLocation, Navigate } from "react-router-dom";
 import { LOGIN_USER, LOGOUT_USER, SET_INVENTORIES, CLEAR_INVENTORY, UPDATE_INVENTORY} from "./store/types";
 import io from "socket.io-client";
 import { message as antd_message  } from 'antd';
-import { connect } from 'react-redux';
+// import { connect } from 'react-redux';
 
 const mapStateToProps = (state) => {
 
@@ -25,9 +25,6 @@ export function useAuth() {
 export function UserConsumer() {
     return AuthContext.Consumer;
 }
-
-
-
 
 export function AuthProvider({ children, ...props }) {
     console.log("AuthProvider")
@@ -65,12 +62,15 @@ export function AuthProvider({ children, ...props }) {
 
     // Imitates componentDidUpdate but only if user is updated
     useEffect(() => {
-        // console.log("props.loggedUser", )
         if(user && user.loggedIn) {
-            // console.log("loggedIn", socket)
             const URL = "http://localhost:8080";
             const tmpSocket = io(URL, { autoConnect: true });
-            console.log("tmpSocket");
+            console.log("tmpSocket", tmpSocket);
+            if( ! tmpSocket) {
+                if(offline === false) {
+                    setOffline(true);
+                }
+            }
             if(tmpSocket && !socket) {
                 setSocket(tmpSocket);
                 tmpSocket.on("connect", (socket) => {
@@ -83,8 +83,7 @@ export function AuthProvider({ children, ...props }) {
                 });
                 tmpSocket.on("disconnect", () => {
                     /** 
-                     * !!!!!
-                     * DEPRECATED: reload in disconnect 
+                     * !!!!! DEPRECATED: reload in disconnect 
                      * 
                      * */
                     // setUser(null);
@@ -122,7 +121,7 @@ export function AuthProvider({ children, ...props }) {
                     setSocket(null);
                 });
                 tmpSocket.on('updateProduct', function(json) {   
-                    console.log("updateProduct") 
+                    console.log("updateProduct", json) 
                     if(json && json.length) {
                         const product = JSON.parse(json);
                         if(product && product.length == 1) {
